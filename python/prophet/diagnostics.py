@@ -362,7 +362,7 @@ def performance_metrics(df, metrics=None, rolling_window=0.1, monthly=False):
     -------
     Dataframe with a column for each metric, and column 'horizon'
     """
-    valid_metrics = ['mse', 'rmse', 'mae', 'mape', 'mdape', 'smape', 'coverage']
+    valid_metrics = ['mse', 'rmse', 'mae', 'mape', 'mdape', 'smape', 'coverage', "mgeh"]
     if metrics is None:
         metrics = valid_metrics
     if ('yhat_lower' not in df or 'yhat_upper' not in df) and ('coverage' in metrics):
@@ -508,8 +508,35 @@ def rolling_median_by_h(x, h, w, name):
 # The functions below specify performance metrics for cross-validation results.
 # Each takes as input the output of cross_validation, and returns the statistic
 # as a dataframe, given a window size for rolling aggregation.
+import math
+def geh(M, C):
+    if M + C == 0:
+        return 0
+    try:
+        return math.sqrt((2 * (M - C) ** 2) / (M + C))
+    except ValueError:
+        print(M,C)
+        return 0
 
 
+def mgeh(df,w):
+    """Mean GEH
+    
+    Parameters
+    ----------
+    df: Cross-validation results dataframe.
+    w: Aggregation window size.
+
+    Returns
+    -------
+    Dataframe with columns horizon and mgeh.
+    """
+    geh_val = df.apply(lambda row: geh(row["yhat"], row["y"]), axis=1)
+    if w <0:
+        return pd.DataFrame({'horizon':df["horizon"], 'mgeh':geh_val, "ds":df["ds"]})
+    return rolling_mean_by_h(
+        x=geh_val.values, h=df['horizon'].values, w=w, name='mgeh'
+    )
 def mse(df, w):
     """Mean squared error
 
