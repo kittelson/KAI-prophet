@@ -1,4 +1,4 @@
-name: "Create Python distributions and upload to PyPI"
+name: "Create Python distributions"
 
 on:
   release:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ["macos-latest", "ubuntu-latest", "windows-latest"]
+        os: ["windows-latest"]
       fail-fast: false
 
     steps:
