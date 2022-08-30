@@ -2,7 +2,7 @@ name: "Create Python distributions"
 
 on:
   release:
-    types: [published]
+    types: [created]
   workflow_dispatch: {}
 
 env:
@@ -50,16 +50,13 @@ jobs:
           name: artifact-${{ matrix.os }}-wheel
           path: "./**/*.whl"
 
-  make-sdist:
-    name: Make source distribution
+  attach-artifacts:
+    name: Attach Artifacts
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - run: pipx run build --sdist
-        working-directory: python
-
-      - uses: actions/upload-artifact@v3
+      - name: Upload the artifacts
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: artifact-source-dist
-          path: "./**/dist/*.tar.gz"
+          args: "artifact-*"
