@@ -50,10 +50,6 @@ jobs:
           name: artifact-${{ matrix.os }}-wheel
           path: "./**/*.whl"
 
-  attach-artifacts:
-    name: Attach Artifacts
-    runs-on: ubuntu-latest
-    steps:
       - name: Upload the artifacts
         uses: skx/github-action-publish-binaries@master
         env:
